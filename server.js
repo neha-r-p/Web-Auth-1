@@ -34,24 +34,24 @@ server.post("/api/register", (req, res) => {
 });
 
 server.post("/api/login", (req, res) => {
-    let { username, password } = req.body;
-  
-    Users.findBy({ username })
-      .first()
-      .then(user => {
-        if (user && bcrypt.compareSync(password, user.password)) {
-          res.status(200).json({ message: `Welcome ${user.username}!` });
-        } else {
-          res.status(401).json({ message: "Invalid Credentials" });
-        }
-      })
-      .catch(error => {
-        console.log("login error", error)
-        res.status(500).json(error);
-      });
-  });
+  let { username, password } = req.body;
+  console.log("login body", req.body)
 
-server.get("/api/users", restricted, (req, res) => {
+  Users.findBy({ username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(password, user.password)) {
+        res.status(200).json({ message: `Welcome ${user.username}!` });
+      } else {
+        res.status(401).json({ message: "You cannot pass!" });
+      }
+    })
+    .catch(error => {
+      res.status(500).json(error);
+    });
+});
+
+server.get("/api/users", (req, res) => {
   Users.find()
     .then(users => {
       res.json(users);

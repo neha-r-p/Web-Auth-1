@@ -4,6 +4,8 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 
 const Users = require("./users/user-model");
+const db = require("./data/db-config");
+const restricted = require("./auth/restricted-middleware");
 
 const server = express();
 
@@ -49,7 +51,7 @@ server.post("/api/login", (req, res) => {
       });
   });
 
-server.get("/api/users", (req, res) => {
+server.get("/api/users", restricted, (req, res) => {
   Users.find()
     .then(users => {
       res.json(users);

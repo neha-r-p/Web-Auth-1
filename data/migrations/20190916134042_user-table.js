@@ -3,7 +3,7 @@ exports.up = function(knex) {
     tbl.increments();
 
     tbl
-      .toString("username", 128)
+      .string("username", 128)
       .notNullable()
       .unique();
     tbl.string("password", 128).notNullable();

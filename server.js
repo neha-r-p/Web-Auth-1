@@ -3,24 +3,32 @@ const helmet = require("helmet");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+const KnexSessionStore = require("connect-session-knex")(session)
 
 const Users = require("./users/user-model");
-const db = require("./data/db-config");
+const dbConnection = require("./data/db-config");
 const restricted = require("./auth/restricted-middleware");
 
 const server = express();
 
 const sessionConfig = {
-  name: "tiger",
-  secret: process.env.SESSION_SECRET || "keep it secret, keep it safe!",
+  name: "chocochip", //would name the cookie sid by default
+  secret: process.env.SESSION_SECRET ||'keep it secret, keep it safe',
   cookie: {
-    maxAge: 1000 * 60 * 60,
-    secure: false, //during development false is okay, but production should be true
-    httpOnly: true
+    maxAge: 1000 * 60 * 60, //in milliseconds
+    secure: false, //true means only send cookie over https
+    httpOnly: true, //js has no access to the cookie
   },
   resave: false,
-  saveUninitialized: false //GDPR compliance
-};
+  saveUninitialized: true, //GDPR compliance
+  store: new KnexSessionStore({
+    knex: dbConnection,
+    tablename: 'knexsessions',
+
+    createtable: true,
+    clearInterval: 1000 * 60 * 30, //clean out/expire all session data
+  })
+}
 
 server.use(helmet());
 server.use(express.json());
@@ -66,12 +74,26 @@ server.post("/api/login", (req, res) => {
     });
 });
 
-server.get("/api/users", (req, res) => {
+server.get("/api/users", restricted, (req, res) => {
   Users.find()
     .then(users => {
       res.json(users);
     })
     .catch(err => res.send(err));
 });
+
+server.get('/logout'), (req, res) => {
+  if(req.session){
+    req.session.destroy(error => {
+      if(error) {
+        res.status(500).json({ error: "check out anytime you like but never leave" })
+      } else {
+        res.status(200).json({ message: "bye" })
+      }
+    })
+  } else {
+    res.status(500).json({ error: "already logged out" })
+  }
+}
 
 module.exports = server;

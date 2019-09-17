@@ -10,9 +10,22 @@ const restricted = require("./auth/restricted-middleware");
 
 const server = express();
 
+const sessionConfig = {
+  name: "tiger",
+  secret: process.env.SESSION_SECRET || 'keep it secret, keep it safe!',
+  cookie: {
+    maxAge: 1000 * 60 * 60,
+    secure: false, //during development false is okay, but production should be true
+    httpOnly: true,
+  },
+  resave: false,
+  saveUninitialized: false //GDPR compliance
+}
+
 server.use(helmet());
 server.use(express.json());
 server.use(cors());
+server.use(session(sessionConfig))
 
 server.get("/", (req, res) => {
   res.send("Hi my name is Neha!");

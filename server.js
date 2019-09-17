@@ -2,6 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const session = require("express-session");
 
 const Users = require("./users/user-model");
 const db = require("./data/db-config");

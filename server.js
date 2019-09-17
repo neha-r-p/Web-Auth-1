@@ -35,7 +35,7 @@ server.post("/api/register", (req, res) => {
 
 server.post("/api/login", (req, res) => {
   let { username, password } = req.body;
-  console.log("login body", req.body)
+  console.log("login body", req.body);
 
   Users.findBy({ username })
     .first()

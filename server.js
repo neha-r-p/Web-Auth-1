@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
-const KnexSessionStore = require("connect-session-knex")(session)
+const KnexSessionStore = require("connect-session-knex")(session);
 
 const Users = require("./users/user-model");
 const dbConnection = require("./data/db-config");
@@ -13,22 +13,22 @@ const server = express();
 
 const sessionConfig = {
   name: "tigerbalm", //would name the cookie sid by default
-  secret: process.env.SESSION_SECRET ||'keep it secret, keep it safe',
+  secret: process.env.SESSION_SECRET || "keep it secret, keep it safe",
   cookie: {
     maxAge: 1000 * 60 * 60, //in milliseconds
     secure: false, //true means only send cookie over https
-    httpOnly: true, //js has no access to the cookie
+    httpOnly: true //js has no access to the cookie
   },
   resave: false,
   saveUninitialized: true, //GDPR compliance
   store: new KnexSessionStore({
     knex: dbConnection,
-    tablename: 'knexsessions',
+    tablename: "knexsessions",
 
     createtable: true,
-    clearInterval: 1000 * 60 * 30, //clean out/expire all session data
+    clearInterval: 1000 * 60 * 30 //clean out/expire all session data
   })
-}
+};
 
 server.use(helmet());
 server.use(express.json());
@@ -82,13 +82,13 @@ server.get("/api/users", restricted, (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.get('/api/logout', (req, res) => {
+server.get("/api/logout", (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
       if (err) {
-        res.send('you can never leave');
+        res.send("you can never leave");
       } else {
-        res.send('Thanks for visiting!');
+        res.send("Thanks for visiting!");
       }
     });
   }

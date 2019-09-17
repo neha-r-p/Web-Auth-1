@@ -1,0 +1,18 @@
+.App {
+  text-align: center;
+}
+
+form {
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  margin: 10px auto;
+  
+  input{
+    display: flex;
+    flex-direction: column;
+    margin: 10px auto;
+    height: 25px;
+    width: 150px;
+  }
+}

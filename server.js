@@ -12,7 +12,7 @@ const restricted = require("./auth/restricted-middleware");
 const server = express();
 
 const sessionConfig = {
-  name: "chocochip", //would name the cookie sid by default
+  name: "tigerbalm", //would name the cookie sid by default
   secret: process.env.SESSION_SECRET ||'keep it secret, keep it safe',
   cookie: {
     maxAge: 1000 * 60 * 60, //in milliseconds
@@ -57,19 +57,19 @@ server.post("/api/register", (req, res) => {
 
 server.post("/api/login", (req, res) => {
   let { username, password } = req.body;
-  console.log("login body", req.body);
 
   Users.findBy({ username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        res.session.user = user;
+        req.session.user = user;
         res.status(200).json({ message: `Welcome ${user.username}!` });
       } else {
-        res.status(401).json({ message: "You cannot pass!" });
+        res.status(401).json({ message: "You shall not pass!" });
       }
     })
     .catch(error => {
+      console.log("login error", error);
       res.status(500).json(error);
     });
 });
@@ -82,18 +82,16 @@ server.get("/api/users", restricted, (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.get('/logout'), (req, res) => {
-  if(req.session){
-    req.session.destroy(error => {
-      if(error) {
-        res.status(500).json({ error: "check out anytime you like but never leave" })
+server.get('/api/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('you can never leave');
       } else {
-        res.status(200).json({ message: "bye" })
+        res.send('Thanks for visiting!');
       }
-    })
-  } else {
-    res.status(500).json({ error: "already logged out" })
+    });
   }
-}
+});
 
 module.exports = server;
